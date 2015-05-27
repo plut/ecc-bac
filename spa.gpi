@@ -1,0 +1,54 @@
+unset xtics; unset ytics
+unset key
+# unset border; unset key; set zeroaxis
+# unset log
+set sample 800
+set border 3
+unset x2zeroaxis;
+
+# set fontpath "/usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/"
+# set terminal postscript eps color enhanced dl 1.0 size 5,2.5 \
+# "CMSS10" 24 fontfile "cmss10.pfb"
+set terminal pdf enhanced color
+
+S(x)=sin(2*pi*x)
+C(x)=cos(2*pi*x)
+T(x)=tan((x-.5)*.3)*.4;
+# B1(x)=.3+S(x)+S(2*x)/2+S(3*x)/3+S(5*x)/5+S(7*x)/7+S(9*x)/9+S(11*x)/11;
+# A1(x)=.3+.3*S(x)+.3*S(2*x)+.3*S(3*x)+.3*S(4*x)+.3*S(6*x)+.3*S(8*x)+.3*S(5*x);
+A1(x)=.7+1.8*S(x)-.6*C(x)+.3*S(2*x)+.4*C(2*x)+.2*S(3*x)-.3*C(3*x)+.4*S(4*x)+.1*C(4*x)+.4*S(5*x)+.22*S(11*x)-.27*S(16*x)
+B1(x)=.9+.2*S(x)-.6*C(x)+.3*S(2*x)-.5*C(2*x)+.4*S(3*x)-.3*C(3*x)+.5*S(4*x)-.1*C(4*x)+.4*S(5*x)+.2*S(13*x)-.3*S(18*x)
+A(x)=.5+S(.7*A1(x-floor(x))/6)
+B(x)=.5+S(B1(x-floor(x))/6)
+
+set style line 1 lw 3 lc rgb "#b22222";
+
+set terminal pdf size 1.6,2.5
+
+# set output 'spa-A.pdf'
+# plot [0:1] .5+(1+T(S(315159*x))) * A(x) w l ls 1;
+# 
+# set output 'spa-B.pdf'
+# plot [0:1] .5+(1+T(S(315159*x))) * B(x) w l ls 1;
+set terminal pdf  size 5,2.5
+
+set output 'spa.pdf'
+set sample 1500
+set arrow from graph .95,0 to graph 1,0
+set arrow from graph 0,.9 to graph 0,1
+set xlabel ""
+set ylabel ""
+
+plot [0:8] .5+(1 + T(S(314159*x))) * (\
+  (x < 1) ? A(x) : \
+  (x < 2) ? B(x): \
+  (x < 3) ? A(x) : \
+  (x < 4) ? A(x) : \
+  (x < 5) ? A(x) : \
+  (x < 6) ? B(x) : \
+  (x < 7) ? A(x) : \
+  (x < 8) ? B(x) : \
+  0) w l ls 1;
+
+# set output 'spa-C.pdf'
+# plot [0:8] .5+(1 + T(S(314159*x))) * (B(x)) w l ls 1;
