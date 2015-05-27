@@ -5,6 +5,7 @@
 \usepackage{unicode}
 \usepackage{booktabs}
 \usepackage{lmodern,sfmath}
+\DeclareUnicodeCharacter{2713}{\checkmark}
 
 \makeatletter
 \usetheme{CambridgeUS}%<<<
@@ -34,6 +35,14 @@
 \useinnertheme{rectangles}
 \setbeamertemplate{blocks}[default]
 \setbeamertemplate{title page}[default][rounded=false,shadow=false]
+
+\defbeamertemplate{itemize item}{exemple}{{\color{bleu}$\rhd$}}
+\defbeamertemplate{itemize subitem}{exemple}{{\color{bleu}$\rhd$}}
+\newenvironment<>{exemple}{\begin{actionenv}%
+  \ifnum\@itemdepth = 0 \setbeamertemplate{itemize item}[exemple]%
+  \else \setbeamertemplate{itemize subitem}[exemple]\fi
+  \begin{itemize}\item}%
+  {\end{itemize}\end{actionenv}}
 %>>>
 \def\strong#1{{\usebeamercolor{strong}\textcolor{fg}{\textbf{#1}}}}
 \def\imp#1{{\usebeamercolor{emph}\textcolor{fg}{\emph{#1}}}}
@@ -301,7 +310,7 @@ de complexité $√N$.
 on exige donc qu'il n'existe pas de meilleure attaque.
 \end{itemize}
 \begin{center}
-\includegraphics[width=.3\hsize]{raphael_euclid}
+\includegraphics[width=.4\hsize]{raphael_euclid}
 \end{center}
 \end{frame}
 
@@ -599,7 +608,7 @@ avec probabilité $\prob ≈ u^{-u}$.
 \item Par exemple, $N'$ est $p^{1/4}$-friable avec probabilité $1/256$.
 \end{itemize}
 \begin{block}{}
-On s'attend à ce que $N'$ ait au moins un diviseur premier
+En général, $N'$ a au moins un diviseur premier
 de taille polynomiale en~$p$.
 \end{block}
 \item Le choix du seuil $u$ est délicat ; par exemple, pour $p≈
@@ -610,13 +619,54 @@ tordue sûre).
 \end{itemize}
 \end{frame}
 \begin{frame}\frametitle{Corps de base spécial}
-
+\begin{itemize}
+\item Certaines courbes utilisent des corps de base
+dont la cardinalité est un nombre premier « spécial » :
+une valeur d'un « petit » polynôme.
+\begin{exemple}
+NIST $p_{192} = 2^{192} - 2^{64} - 1$ = $x^3 - x - 1$ où $x=2^{64}$.
+\end{exemple}
+\item Le logarithme discret \imp{multiplicatif} est plus facile
+dans de tels corps que dans le cas général.
+\item Il est envisageable que des attaques analogues soient découvertes
+sur les courbes elliptiques.
+\begin{block}{}
+Il est souhaitable de choisir un nombre premier pseudo-aléatoire.
+\end{block}
+\item Il est difficile de  vérifier si un nombre
+est une valeur d'un « petit » polynôme...
+\end{itemize}
 \end{frame}
 \begin{frame}\frametitle{Degré de plongement}
-
+\begin{itemize}
+\item Le degré de plongement est l'ordre de $p$
+dans le groupe multiplicatif $\F_q^{×}$.
+\begin{block}{}
+Le degré de plongement est~$≥ p^{1/4}$
+avec probabilité~$\prob ≥ 1-1/√p$.
+\end{block}
+\end{itemize}
 \end{frame}
 \begin{frame}\frametitle{Structure multiplicative du corps de base}
-
+\begin{itemize}
+\item La structure multiplicative de $\F_p^{×}$ dépend
+de la factorisation de~$p-1$.
+\item Même si elle n'est pas liée au logarithme discret sur une courbe,
+en général $p-1$ a au moins un grand diviseur premier.
+\begin{block}{}
+$p-1$ a un diviseur premier $≥ (\log p)^2$
+avec probabilité $≥1-1/√p$.
+\end{block}
+\end{itemize}
+\end{frame}
+\begin{frame}\frametitle {Résumé}
+\begin{center}\begin{tableau}{llllll}
+\entete       & NIST & Brainpool & ANSSI & OSCCA & Curve25519 \\
+$N$ premier   &  ✓   & ✓         & ✓     & ✓     & \\
+$p$ ordinaire &      & ✓         & ✓     & ✓     & \\
+Loi unifiée   &      &           &       &       &✓\\
+$N'$ premier  &      &           &       &       &✓\\
+\end{tableau}\end{center}
 \end{frame}
 \subsection{Facilitation de l'implémentation}
 \begin{frame}\frametitle{Facilitation de l'implémentation}
@@ -634,6 +684,5 @@ plus rapides ou plus commodes.
 \includegraphics[width=.6\hsize]{pompeii_transparent}
 \end{center}
 \end{frame}
-
 
 \end{document}
