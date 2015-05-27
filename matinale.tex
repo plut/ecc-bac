@@ -294,7 +294,7 @@ Qu'est-ce que qu'une « bonne » courbe pour la cryptographie ?
 \end{itemize}
 \begin{block}{Conditions incompatibles}
 Certaines de ces conditions sont incompatibles entre elles,
-ce qui peut justifider l'existence de plusieurs (familles de) courbes.
+ce qui peut justifier l'existence de plusieurs (familles de) courbes.
 \end{block}
 \end{frame}
 \subsection{Difficulté intrinsèque du logarithme discret}
@@ -369,7 +369,7 @@ Il est impératif que $N ≠ p$.
 \item Cette condition exclut les courbes supersingulières.
 \bigskip
 \item Soit $e$ le \imp{degré de plongement},
-c.à.d. le plus petit entier tel que $N$ divise $p^e - 1$ ;
+c.-à-d. le plus petit entier tel que $N$ divise $p^e - 1$ ;
 alors il existe un homomorphisme de groupe calculable vers
 le groupe multiplicatif de $\F_{p^e}$,
 et donc le logarithme discret a une complexité
@@ -467,9 +467,10 @@ il existe un point d'abscisse~$x$ sur
 exactement une des deux courbes $E$ et~$E'$.
 
 Dans certains cas, un adversaire peut injecter une abscisse appartenant
-à la courbe tordue\bib{Fouque-Lercier-Réal-Vallette 2008} :
+à la courbe tordue\bib{Fouque-Lercier-Réal-Valette 2008} :
 \begin{itemize}
 \item protocole mal conçu (compression de point),
+\item manque de tests dans l'implémentation,
 \item attaque par injection de faute...
 \end{itemize}
 
@@ -496,6 +497,10 @@ si $N$ est pair\\ ($\prob = 1$ si $N$ premier).
 \begin{block}{}
 Il est préférable que la courbe ne contienne pas de tels points spéciaux.
 \end{block}
+\begin{itemize}
+\item Des points spéciaux de la forme $(0, y)$ existent toujours sur la courbe
+ou sa tordue.\\ ($\prob = 1$).
+\end{itemize}
 \end{frame}
 \begin{frame}\frametitle{Corps de base spéciaux}
 De nombreuses courbes standard ont des corps de base spéciaux :
@@ -508,7 +513,7 @@ les premiers bits de~$N$ sont les premiers bits de~$p$.
 \item Les premiers bits de $n + r · N$
 sont les premiers bits de~$r$.
 \item Ceci rend la protection par masquage de~$n$
-insuffisante\bib{DK2005, BPSY2014, FRV2014...}.
+insuffisante\bib{DK2005, BPSY2014, FRV2014, SW2015...}.
 \end{itemize}
 
 \begin{block}{}
