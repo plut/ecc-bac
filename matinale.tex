@@ -580,7 +580,7 @@ théorie de la multiplication complexe ;
 sur laquelle $E$ admet un relèvement fidèle.
 \end{itemize}
 Ce nombre est minoré en fonction de $D_{K}$:
-\[ h(K) ≥ C \frac{\sqrt{\abs{D_K}}}{\log \abs{D_K}}. \]
+\[ h_K ≥ C \frac{\sqrt{\abs{D_K}}}{\log \abs{D_K}}. \]
 \begin{itemize}
 \item[$⇒$] aucune condition supplémentaire sur $h_K$ n'est a priori
 nécessaire.
@@ -666,12 +666,19 @@ avec probabilité $≥1-1/√p$.
 \end{itemize}
 \end{frame}
 \begin{frame}\frametitle {Résumé}
-\begin{center}\begin{tableau}{llllll}
-\entete       & NIST & Brainpool & ANSSI & OSCCA & Curve25519 \\
-$N$ premier   &  ✓   & ✓         & ✓     & ✓     & \\
-$p$ ordinaire &      & ✓         & ✓     & ✓     & \\
-Loi unifiée   &      &           &       &       &✓\\
-$N'$ premier  &      &           &       &       &✓\\
+\begin{center}\begin{tableau}{*{5}{l}}
+\entete       & NIST & Brainpool & ANSSI & OSCCA\\
+$N$ premier   &  ✓   & ✓         & ✓     & ✓   \\
+$p$ ordinaire &      & ✓         & ✓     & ✓   \\
+Loi unifiée   &      &           &       &      \\
+$N'$ premier  &      &           &       &      \\
+Générique & &✓&✓&✓ \\
+\entete       & NUMS & Curve25519/41417 & Ed448-Goldilocks \\
+$N$ premier   & & & & \\
+$p$ ordinaire & & & & \\
+Loi unifiée   &✓ &✓ &✓ & \\
+$N'$ premier  &✓ &✓ &✓ & \\
+Générique  & & & & \\
 \end{tableau}\end{center}
 \end{frame}
 \subsection{Facilitation de l'implémentation}
@@ -719,6 +726,56 @@ permettent une arithmétique plus rapide.
 permet d'accélérer l'arithmétique de la courbe.
 \end{itemize}
 \end{frame}
+
+\subsection{Diversité}
+\begin{frame}\frametitle{Différents critères pour différents usages}
+\begin{itemize}
+\item Les critères précédemment énoncés ne peuvent être tous vérifiés.
+\item En particulier, compromis vitesse/généricité.
+\item Mais aussi, facilité d'implémentation/protection latérale.
+\end{itemize}
+\begin{block}
+Il est souhaitable d'utiliser (et de normaliser) différentes courbes
+pour différents usages !
+\end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Modèles usuels}
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=.4\hsize]{weierstrass} & \includegraphics[width=.4\hsize]{edwards} \\
+Weierstrass & Edwards \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Modèles usuels}
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=.4\hsize]{jacobi} & \includegraphics[width=.4\hsize]{hessian} \\
+Jacobi & Hess \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Sur un corps fini}
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=.45\hsize]{frog} & \includegraphics[width=.45\hsize]{cockroach} \\
+Frog & Cockroach \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Sur un corps fini}
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=.45\hsize]{walrus} & \includegraphics[width=.45\hsize]{bunny} \\
+Walrus & Bunny \\
+\end{tabular}
+\end{center}
+\end{frame}
+
 \sectionframe{Transparence}
 \begin{frame}\frametitle{Transparence}
 \begin{center}
