@@ -162,6 +162,7 @@
 % Macros perso
 \def\abs#1{\left|#1\right|}
 \def\pa#1{\left(#1\right)}
+\def\acco#1{\left\{#1\right\}}
 \def\bib#1{{\usebeamercolor{emph}\textcolor{fg}{~[#1]}}}
 \def\F{\mathbb{F}}
 \def\prob{\mathcal{P}}
@@ -687,6 +688,7 @@ Une courbe elliptique de la forme $y^2 = x^3 - 3 x + b$
 permet d'économiser 2 des 10 multiplications requises
 pour une addition de points.
 
+\bigskip
 Une courbe aléatoire sur $\mathbb F_p$ est isomorphe avec une courbe
 $a=-3$ avec probabilité
 \begin{itemize}
@@ -699,7 +701,23 @@ Si la courbe a $N < p$ points,
 alors un élément de $ℤ/Nℤ$ peut être représenté par un nombre
 de la même taille que $p$.
 
+\bigskip
 Exactement la moitié des courbes satisfont cette condition.
+\end{frame}
+\begin{frame}\frametitle{Racines carrées rapides}
+Si $p ≡ -1 \pmod{4}$ (ou $p ≡ 5 \pmod{8}$) alors
+calculer des racines carrées modulo~$p$ est plus facile,
+ce qui permet de simplifier la compression de points.
+\end{frame}
+\begin{frame}\frametitle{Arithmétique dédiée}
+\begin{itemize}
+\item Certains choix de corps de base,
+comme les nombres premiers « spéciaux » des courbes NIST,
+permettent une arithmétique plus rapide.
+\bigskip
+\item De même, choisir des petites valeurs pour les paramètres $a$ et $b$
+permet d'accélérer l'arithmétique de la courbe.
+\end{itemize}
 \end{frame}
 \sectionframe{Transparence}
 \begin{frame}\frametitle{Transparence}
@@ -707,5 +725,163 @@ Exactement la moitié des courbes satisfont cette condition.
 \includegraphics[width=.6\hsize]{pompeii_transparent}
 \end{center}
 \end{frame}
+\subsection{Certificats de courbes elliptiques}
+\begin{frame}\frametitle{Architecture}
+\begin{itemize}
+\item Fournir des courbes remplissant les conditions ci-dessus...
+\item ... accompagnées d'un \strong{certificat} permettant
+de vérifier les propriétés sans refaire tous les calculs :
+\begin{itemize}
+\item nombre de points,
+\item discriminant et nombre de classes,
+\item degré de plongement.
+\end{itemize}
+\bigskip
+\item Programme \strong{déterministe} pour échantillonner une courbe.
+\begin{itemize}
+\item Processus de génération entièrement reproductible.
+\item Peut être un générateur pseudo-aléatoire (généricité)
+ou une énumération des petites valeurs (efficacité).
+\item Certifier toutes les étapes du processus,
+y compris les courbes rejetées.
+\end{itemize}
+\end{itemize}
+\end{frame}
+\begin{frame}\frametitle{Nombre de points premier}
+\begin{itemize}
+\item On connaît la borne de Hasse-Weil: $\abs{N-(p+1)} ≤ 2√p$.
+\medskip
+\item Si $G ≠ 0$ est tel que $q · G = 0$ avec $q ≥ p-2√p+1$ premier,
+alors $q = N$.
+\medskip
+\item Certificat de primalité de $N$: $(G, q, Π)$,
+où $Π$~est une preuve de primalité de~$q$.
+\begin{itemize}
+\item Pour les tailles usuelles de courbes elliptiques,
+$Π$ peut être laissée vide ;
+en effet, pour ces tailles, une preuve directe par APR-CL
+est probablement plus rapide qu'une preuve par certificat ECPP.
+\end{itemize}
+\medskip
+\item Ce certificat est produit une seule fois, pour la courbe finale.
+\item Taille du certificat et vérification en $O(\log^2 p)$ opérations.
+\end{itemize}
+\end{frame}
+\begin{frame}\frametitle{Nombre de points composé}
+\begin{itemize}
+\item Si $n < 2 (√p-1)^2$ est composé et si $P ≠ 0$, $n · P = 0$,
+alors l'ordre de la courbe est composé.
+\begin{itemize}
+\item preuve: soit $d = \gcd (n, N)$; alors $d ≠ 1$ car~$P ≠ 0$.
+Si $d ≠ N$ alors $d$~est un diviseur strict de~$N$.
+Si $d = N$ alors $N$~divise~$n$ ; puisque $n/2 < (√p-1)^2$,
+on a nécessairement~$N = n$, qui est composé.
+\end{itemize}
+\item Certificat de composition de~$N$ : $(n, c, P)$,
+où $c$~est un témoin de composition (Miller-Rabin) de~$n$.
+\item Complexité pour chacune des $O(\log p)$ ou $O(\log^2 p)$ courbes :
+\begin{itemize}
+\item production du certificat : $O(\log p)$~multiplications;
+\item taille du certificat : $O(\log p)$;
+\item vérification : $O(\log p)$~multiplications.
+\end{itemize}
+\end{itemize}
+\end{frame}
+\begin{frame}\frametitle{Nombre de points composé (II)}
+\begin{itemize}
+\item En pratique, le calcul du nombre de points $N$
+se fait en calculant $N \pmod{ℓ}$ pour de petits nombres premiers~$ℓ$.
+\item Si on trouve $N ≡ 0 \pmod{ℓ}$, on peut arrêter le calcul
+pour cette courbe !
+\bigskip
+\item Dans ce cas, on trouve un polynôme $f_{ℓ}$, de degré~$O(ℓ)$,
+dont les racines sont les abscisses de points de $ℓ$-torsion.
+\item Trouver une racine de ce polynôme (par Cantor-Zassenhaus)
+a un coût comparable à celui du calcul de $N \pmod{ℓ}$.
+\item Dans ce cas, $(2ℓ, 2, P)$ est un certificat de composition.
+\end{itemize}
+\end{frame}
+\begin{frame}\frametitle{Discriminant et nombre de classes}
+\begin{itemize}
+\item Le calcul du discriminant nécessite de factoriser
+le nombre~$D_{φ} = t^2 - 4p$.
+\item C'est asymptotiquement l'une des étapes dominantes
+du processus de génération de la courbe ($L(1/3)$).
+\item Certificat : la factorisation de $D_{φ}$.
+\bigskip
+\item Le calcul exact du nombre de classes est
+probablement hors de portée ($L(1/2)$).
+\item Il suffit d'un élément pour prouver que le nombre de classes est grand.
+\item Il est impossible de prouver réalistement que la courbe
+a été rejetée pour cause de nombre de classes trop petit.
+\begin{exemple}
+Solution : générer quelques éléments (déterministes) du groupe de classes
+et prouver que l'on ne peut pas prouver avec ces éléments
+que le nombre de classes est assez grand.
+\end{exemple}
+\end{itemize}
+\end{frame}
+\subsection{Le processus de génération}
+\begin{frame}\frametitle{Exemple}
+\begin{itemize}
+\item Fonction d'échantillonnage pour une graine~$s$:
+\begin{itemize}
+\item $p$ = le plus petit premier $≥ s$;
+\item $g$ = le plus petit générateur de $\F_p^{×}$;
+\item courbes de la forme $y^2 = x^3 - 3x + b$, $b = 1, g, g^2, …$.
+\end{itemize}
+\item Conditions :
+\begin{itemize}
+\item $N$ et $N'$ premiers ;
+\item $Δ ≠ 0$, $N ≠ p$;
+\item degré de plongement de~$E$, $E'$ au moins~$p^{1/4}$;
+\item nombre de classes $≥ p^{1/4}$.
+\end{itemize}
+\end{itemize}
+\end{frame}
+\begin{frame}\frametitle{Exemple de certificat}
+Pour la graine $s = 2015$: $p = 2017$, $g = 2$,
 
+\begin{block}{\small\tt Curve}\small\tt
+(2017, -3, 625)\\
+order = 2063, point = (0, 25)\\
+twist\_order = 1973\\
+disc\_factors = \{6043\}\\
+class\_number = 9, form = (17,3,89)\\
+embedding\_degree = 1031, factors = \{2, 1031\}\\
+twist\_embedding\_degree = 493, factors = \{2, 17, 29\}
+\end{block}
+\vskip -1.7em
+
+\begin{block}{\small\tt Rejected curves}\small\tt
+((2017, -3, 5), composite, 2065, witness, 1679,
+  point, (1,258))\\
+((2017, -3, 25), torsion\_point, 3, point, (448, 288))\\
+((2017, -3, 125), torsion\_point, 2, point, (982, 0))
+\end{block}
+
+\end{frame}
+\begin{frame}\frametitle{Non-manipulabilité}
+\begin{itemize}
+\item Ce processus permet de produire \strong{déterministement}
+une courbe elliptique cryptographique à partir
+\begin{itemize}
+\item d'un ensemble de conditions (y compris bornes numériques),
+\item d'une fonction d'échantillonnage des courbes
+(y compris graine éventuelle).
+\end{itemize}
+\item Seules quelques conditions influenceront probablement
+le résultat final :
+\begin{itemize}
+\item sécurité de la courbe tordue,
+\item choix des bornes de friabilité.
+\end{itemize}
+\item Pour éviter tout soupçon sur le choix de la graine :
+\begin{itemize}
+\item utiliser un schéma d'engagement sur des fragments de la graine ;
+\item utiliser un résultat hors de portée de manipulation
+(cours de la Bourse, résultat sportif, loterie publique).
+\end{itemize}
+\end{itemize}
+\end{frame}
 \end{document}
