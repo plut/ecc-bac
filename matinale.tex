@@ -6,6 +6,9 @@
 \usepackage{booktabs}
 \usepackage{lmodern,sfmath}
 \DeclareUnicodeCharacter{2713}{\checkmark}
+\usepackage{animate}
+\usepackage{graphicx}
+\graphicspath{{graphics/}}
 
 \makeatletter
 \usetheme{CambridgeUS}%<<<
@@ -955,7 +958,8 @@ le résultat final :
 
 \begin{frame}\frametitle{Graine}
 \begin{center}
-\includegraphics[width=0.7\hsize]{keyboard_cat}
+%\includegraphics[width=0.7\hsize]{keyboard_cat}
+\animategraphics[loop,autoplay,width=0.7\hsize]{12}{animated_cat/keyboard_cat-}{0}{93}
 \end{center}
 \end{frame}
 
