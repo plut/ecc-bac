@@ -186,14 +186,21 @@ Reinhard, Martin Ekerå}
 \item Fournissent un groupe abélien fini
 où le logarithme discret est \strong{difficile}
 (plus que dans les groupes multiplicatifs).
-\item Standardisées à partir de 2000:
-\begin{center}\begin{tableau}{lll}
-\entete Année & Courbes & Tailles \\
-2000 & NIST & 192, 224, 256, 384, 521\\
-2005 & Brainpool & 160, 192, 224, 256, 320, 384, 512\\
-2010 & OSCCA & 256 \\
-2011 & ANSSI & 256 \\
+\begin{exemple}
+Pour un niveau de sécurité de 128~bits : une courbe de 256~bits.
+\item Taille équivalente en RSA $≈ 4\,096$ bits.
+\end{exemple}
+\end{itemize}
+\end{frame}
+\begin{frame}\frametitle{Courbes standasrdisées}
+\begin{center}\begin{tableau}{lcll}
+\entete Année & &Courbes & Tailles \\
+2000 & \includegraphics[width=2em]{nsa} &NIST & 192, 224, 256, 384, 521\\
+2005 & & Brainpool & 160, 192, 224, 256, 320, 384, 512\\
+2010 & \includegraphics[width=2em]{oscca} &OSCCA & 256 \\
+2011 & \includegraphics[width=2em]{anssi} &ANSSI & 256 \\
 \end{tableau}\end{center}
+\begin{itemize}
 \item Plus quelques propositions académiques.
 \item En pratique, on trouve surtout dans la nature les courbes NIST.
 \end{itemize}
@@ -675,13 +682,13 @@ avec probabilité $≥1-1/√p$.
 $N$ premier   &  ✓   & ✓         & ✓     & ✓   \\
 $p$ ordinaire &      & ✓         & ✓     & ✓   \\
 Loi unifiée   &      &           &       &      \\
-$N'$ premier  &      &           &       &      \\
+Tordue sûre   &      &           &       &      \\
 Générique & &✓&✓&✓ \\
 \entete       & NUMS & Curve25519/41417 & Ed448-Goldilocks  &\\
 $N$ premier   & & & & \\
 $p$ ordinaire & & & & \\
 Loi unifiée   &✓ &✓ &✓ & \\
-$N'$ premier  &✓ &✓ &✓ & \\
+Tordue sûre   &✓ &✓ &✓ & \\
 Générique  & & & & \\
 \end{tableau}\end{center}
 \end{frame}
