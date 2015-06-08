@@ -177,7 +177,7 @@
 \begin{document}
 \title[Diversity and Transparency for ECC]{Diversity and Transparency for ECC}
 \author[J.-P. Flori]{Jean-Pierre Flori, Jérôme Plût, Jean-René
-Reinhard, Martin Ekerå}
+Reinhard, and Martin Ekerå}
 \institute[ANSSI]{ANSSI and NCSA/SW}
 \date{June 11, 2015}
 
@@ -190,18 +190,16 @@ Reinhard, Martin Ekerå}
 \begin{block}{}
 \strong{In general,} the group of rational points of an elliptic curve
 behaves as a ``generic group'':
-the DLOG problem has \strong{exponential} complexity.
+the DLOG problem has \strong{exponential} complexity, provided:
 \end{block}
 \begin{itemize}
-\item More precisely, it is $O(√{q})$, where $q$ is
-the \imp{largest prime factor} of the curve cardinality~$N$.
+\item The curve cardinality includes a \imp{large prime factor} $q$.
 \begin{itemize}
 \item Solution: use curves with (almost) prime cardinality.
 \end{itemize}
-\item A few particular curves are \imp{weak}:
-the DLOG problem can be transfered into weaker groups.
+\item The DLOG problem can not be transferred into \imp{weaker} groups.
 \begin{itemize}
-\item Solution: avoid such curves.
+\item Solution: avoid weak curves.
 \end{itemize}
 \end{itemize}
 \begin{block}{}
@@ -248,16 +246,16 @@ It is a good time to standardize new curves.
 
 \sectionframe{Security}
 
-\begin{frame}\frametitle{What is a good curve?}
+\begin{frame}\frametitle{Five classes of criteria?}
 \begin{enumerate}
 \item The \strong{DLOG} problem should be hard.
 \item Implementations should be \strong{safe} (e.g. resist \imp{side-channel attacks}).
 \item The curve should exhibit no \strong{particularities}.
-\item Implementations could be \strong{optimized}.
-\item (The curve should exhibit \strong{interesting} properties.)
+\item Implementations can be \strong{optimized}.
+\item (The curve exhibits \strong{interesting} properties.)
 \end{enumerate}
 \begin{block}{Tradeoffs}
-Some of these conditions are \strong{incompatible}:
+Some conditions are \strong{incompatible}:
 this is a good reason to standardize \imp{different} (families of) curves.
 \end{block}
 \begin{block}{Base field}
@@ -273,8 +271,9 @@ introduce more vulnerabilities without valuable properties.
 \item \strong{Large prime subgroup}:
 Attacks with complexity~$O(√q)$ exist where $q$ is the largest prime factor of $N$.
 \begin{block}{}
+It is mandatory that:
 \begin{itemize}
-\item It is mandatory that  \imp{$q ≈ N$} ($\prob ≈ \frac{1}{\log p}$, costly).
+\item \imp{$q ≈ N$} ($\prob ≈ \frac{1}{\log p}$, costly).
 \item At best \imp{$q = N$} (\emph{no complete addition law!}).
 \end{itemize}
 \end{block}
@@ -286,7 +285,7 @@ It is mandatory that:
 \begin{itemize}
 \item \imp{$Δ ≠ 0$} ($\prob ≈ 1$, free);
 \item \imp{$N ≠ p$} ($\prob ≈ 1$, free);
-\item the \imp{embedding degree} should be large ($\prob ≈ 1$, costly).
+\item the \imp{embedding degree} must be large ($\prob ≈ 1$, costly).
 \end{itemize}
 \end{block}
 \end{itemize}
