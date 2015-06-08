@@ -353,8 +353,8 @@ Ensure no points with a \imp{zero coordinate} exist (\emph{no complete addition 
 Ensure no \imp{small subgroups} exist ($\prob = 1$ if $N$ is prime, \emph{no complete addition law!}).
 \end{block}
 \medskip
-\begin{block}{Twist security}
-The \imp{twist} has prime cardinality (\strong{$\prob ≈ \frac{1}{\log p}$}).
+\begin{block}{Twist attacks}
+Use a \imp{twist} with prime cardinality (\strong{$\prob ≈ \frac{1}{\log p}$}).
 \end{block}
 \end{frame}
 
@@ -418,10 +418,10 @@ Generic  & & & & \\
 
 \begin{frame}\frametitle{Optimized implementation}
 \begin{itemize}
-\item Curves with \imp{$N < p$} points.
+\item Curves with \imp{$N < p$} points (half of them).
 \item Fast computation of \imp{square roots} ($p \neq 3 \pmod{4}$).
 \item Fast modular \imp{reduction} (special primes, \emph{inefficient masking!}).
-\item \imp{Small coefficients} for the curve equation.
+\item \imp{Small coefficients} for the curve equation (\emph{no genericity!}).
 \item Specific system of \imp{coordinates} (some entail \emph{no prime cardinality!}).
 \end{itemize}
 \end{frame}
@@ -433,7 +433,13 @@ Generic  & & & & \\
 \item The aforementioned criteria are \strong{conflicting}.
 \item In particular, \imp{tradeoffs} to be made between genericity/speed\ldots
 \item \ldots but also between optimization/side-channel security.
+\bigskip
+\item Only the first class of criteria is mandatory to ensure
+the \imp{DLOG problem difficulty}.
+\item The other classes of criteria mostly affect speed and
+ease of implementation.
 \end{itemize}
+\bigskip
 \begin{block}{}
 Use (and standardize) \strong{different} (families of) curves!
 \end{block}
