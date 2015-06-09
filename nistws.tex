@@ -354,7 +354,7 @@ Ensure no \imp{small subgroups} exist ($\prob = 1$ if $N$ is prime, \emph{no com
 \end{block}
 \medskip
 \begin{block}{Twist attacks}
-Use a \imp{twist} with prime cardinality (\strong{$\prob ≈ \frac{1}{\log p}$}).
+Use a \imp{twist} with prime cardinality (\strong{$\prob ≈ \frac{1}{\log p}$}, \emph{does not leverage all checks!}).
 \end{block}
 \end{frame}
 
@@ -367,6 +367,10 @@ Use a \imp{twist} with prime cardinality (\strong{$\prob ≈ \frac{1}{\log p}$})
 \item Verify properties satisfied with~\strong{$\prob ≈ 1$} in the sense of the DLOG problem difficulty.
 \item In particular, some \strong{numbers attached to the curve} should be ``\imp{large enough}''.
 \end{itemize}
+
+\begin{block}{}
+The curve should look \strong{generic}.
+\end{block}
 \end{frame}
 
 \begin{frame}\frametitle{Numbers attached to a curve}
@@ -495,7 +499,7 @@ verification of:
 \item the embedding degree.
 \end{itemize}
 \bigskip
-\item A \strong{deterministic} algorithm to sample curves:
+\item A \strong{deterministic} algorithm to sample curves producing \strong{certificates}:
 \begin{itemize}
 \item Completely \imp{reproducible} generation process.
 \item Either pseudo-random (for genericity) or
@@ -588,6 +592,10 @@ a curve from:
 (sports results, stock values, lottery results, sunspots, \ldots).
 \end{itemize}
 \end{itemize}
+
+\begin{block}{}
+No \imp{rigidity} but still \strong{transparency}.
+\end{block}
 \end{frame}
 
 \begin{frame}\frametitle{Seed generation}
