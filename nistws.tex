@@ -390,7 +390,7 @@ with~$\prob ≥ 1-1/√p$ (\emph{no pairings!}).
 \begin{frame}\frametitle{Numbers attached to a curve (II)}
 \begin{block}{Twist cardinality}
 In general, the \imp{twist cardinality} $N'$ has at least
-a prime divisor of polynomial size in~$p$.
+a prime divisor $≥ (\log p)^{O(1)}$.
 \end{block}
 \begin{block}{DLOG in the base field}
 \begin{itemize}
@@ -491,7 +491,7 @@ Walrus & Bunny \\
 \begin{frame}\frametitle{Architecture}
 \begin{itemize}
 \item Provide curves fulfilling a selection of \strong{criteria}\ldots
-\item \ldots together with a \imp{certificate} for faster
+\item \ldots together with a \strong{certificate} for faster
 verification of:
 \begin{itemize}
 \item the number of points,
@@ -499,7 +499,8 @@ verification of:
 \item the embedding degree.
 \end{itemize}
 \bigskip
-\item A \strong{deterministic} algorithm to sample curves producing \strong{certificates}:
+\item A \strong{deterministic} algorithm to sample curves\ldots
+\item \ldots and producing a \strong{certificate}:
 \begin{itemize}
 \item Completely \imp{reproducible} generation process.
 \item Either pseudo-random (for genericity) or
@@ -516,16 +517,16 @@ including \imp{rejected} curves.
 \item \strong{Certificate}: $(G, q, Π)$
 where $G ≠ 0$ is s.t. $q · G = 0$ with $q ≥ p-2√p+1$,
 and $Π$~a primality proof for~$q$.
-\item \imp{Size} and \imp{verification} in~$O(\log^2 p)$, generally only generated once.
+\item \imp{Size} and \imp{verification} in~$O(\log² p)$, generally only generated once.
 \end{itemize}
 \end{block}
 \medskip
 \begin{block}{Composite order}
 \begin{itemize}
 \item \strong{Certificate}: $(P, n, c)$,
-where $P ≠ 0$ is s.t. $n · P = 0$ with $n < 2 (√p-1)^2$,
+where $P ≠ 0$ is s.t. $n · P = 0$ with $n < 2 (√p-1)²$,
 and $c$~a composition witness for~$n$.
-\item \imp{Size}, \imp{generation} and \imp{verification} in~$O(\log p)$.
+\item \imp{Size} in $O(\log p)$, \imp{generation} and \imp{verification} in~$O(\log² p)$.
 \item More efficient \imp{verification} using early-abort SEA information about
 small torsion points.
 \end{itemize}
@@ -580,6 +581,9 @@ a curve from:
 \item a set of \imp{conditions} (including \strong{numerical bounds}),
 \item a \imp{sampling function} (including potential \strong{seed}).
 \end{itemize}
+\begin{block}{}
+No \imp{rigidity} but still \strong{transparency}.
+\end{block}
 \item Only a few \imp{conditions} will actually affect the process:
 \begin{itemize}
 \item twist security,
@@ -589,13 +593,9 @@ a curve from:
 \begin{itemize}
 \item using a \imp{share-commitment} scheme;
 \item using \imp{unpredictable} and \imp{unmanipulable} values
-(sports results, stock values, lottery results, sunspots, \ldots).
+(sports results, stock values, lottery results, sunspot observations, \ldots).
 \end{itemize}
 \end{itemize}
-
-\begin{block}{}
-No \imp{rigidity} but still \strong{transparency}.
-\end{block}
 \end{frame}
 
 \begin{frame}\frametitle{Seed generation}
@@ -603,6 +603,26 @@ No \imp{rigidity} but still \strong{transparency}.
 %\includegraphics[width=0.7\hsize]{keyboard_cat}
 \animategraphics[loop,autoplay,width=0.7\hsize]{12}{animated_cat/keyboard_cat-}{0}{93}
 \end{center}
+\end{frame}
+
+\sectionframe{Conclusion}
+
+\begin{frame}\frametitle{Diversity and Transparency for ECC}
+\begin{block}{\strong{Diversity}}
+International standards should:
+\begin{itemize}
+\item not restrict to a single curve or family of related elliptic curves;
+\item include a ``generic'' elliptic curve.
+\end{itemize}
+\end{block}
+\bigskip
+\begin{block}{\strong{Transparency}}
+All details about the generation process should be:
+\begin{itemize}
+\item public and ``transparent'';
+\item annonced before the actual generation.
+\end{itemize}
+\end{block}
 \end{frame}
 
 \begin{frame}\frametitle{Questions?}
