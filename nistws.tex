@@ -374,16 +374,15 @@ The curve should look \strong{generic}.
 \end{frame}
 
 \begin{frame}\frametitle{Numbers attached to a curve}
-\begin{block}{Discriminant of the endomorphism ring}
-In general, the \imp{discriminant} satisfies $\abs{D_E} ≈ p$ ;
-therefore, $\abs{D_{E}} ≥ √p$ with~$\prob ≈ 1-O(1/√p)$ (\emph{no pairings, no fast endomorphism!}).
-\end{block}
-\begin{block}{Class number friability}
-In general, the \imp{class number} $h_E$ has at least a prime divisor~$≥ (\log p)^{O(1)}$.
+\begin{block}{Discriminant (and class number) of the endomorphism ring}
+The \imp{discriminant} $D_E$ is $≥ √p$ with~$\prob ≈ 1-O(1/√p)$ (\emph{no pairings, no fast endomorphism!}).
 \end{block}
 \begin{block}{Embedding degree}
 The \imp{embedding degree} is~$≥ p^{1/4}$
 with~$\prob ≥ 1-1/√p$ (\emph{no pairings!}).
+\end{block}
+\begin{block}{Class number smoothness}
+In general, the \imp{class number} $h_E$ has at least a prime divisor~$≥ (\log p)^{O(1)}$.
 \end{block}
 \end{frame}
 
@@ -396,7 +395,7 @@ a prime divisor $≥ (\log p)^{O(1)}$.
 \begin{itemize}
 \item The base field cardinality $p$ should be \strong{pseudo-random}
 (\emph{no fast reduction!}).
-\item $p-1$ has a prime divisor $≥ (\log p)^2$ with $\prob ≥ 1-1/√p$.
+\item In general, $p-1$ has a prime divisor $≥ (\log p)^{O(1)}$.
 \end{itemize}
 \end{block}
 \end{frame}
@@ -426,7 +425,8 @@ Generic  & & & & \\
 \item Fast computation of \imp{square roots} ($p \neq 3 \pmod{4}$).
 \item Fast modular \imp{reduction} (special primes, \emph{inefficient masking!}).
 \item \imp{Small coefficients} for the curve equation (\emph{no genericity!}).
-\item Specific system of \imp{coordinates} (some entail \emph{no prime cardinality!}).
+\item Weierstrass equations with $a = -3$ (fixed fraction of them).
+\item More \imp{specific forms} of curves (fixed fraction of them, some entail \emph{no prime cardinality!}).
 \end{itemize}
 \end{frame}
 
@@ -545,7 +545,7 @@ small torsion points.
 \end{itemize}
 \item \imp{Conditions}:
 \begin{itemize}
-\item $N$ et $N'$ prime;
+\item $N$ and $N'$ prime;
 \item $Δ ≠ 0$, $N, N' ≠ p, p + 1$;
 \item embedding degrees of~$E$, $E'$ at least~$p^{1/4}$;
 \item class number $≥ p^{1/4}$.
