@@ -1,0 +1,1064 @@
+\documentclass[francais]{beamer}
+\usetheme{anssi}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage{unicode}
+\DeclareUnicodeCharacter{2713}{\checkmark}
+\usepackage{animate}
+\usepackage{bookmark}
+\usepackage{graphicx}
+\graphicspath{{graphics/}}
+
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\prob}{\mathcal{P}}
+\newcommand{\bib}[1]{{\usebeamercolor{emph}\textcolor{fg}{~[#1]}}}
+
+\begin{document}
+\title[Quelle courbe elliptique ?]{Quelle courbe elliptique pour la cryptographie ?}
+\author[J.-P. Flori]{Jean-Pierre Flori, Jérôme Plût}
+\institute[ANSSI]{ANSSI/SDE/ST/LCR}
+\date[16/12/2016]{Vendredi 16 décembre 2016}
+
+\begin{frame}<handout:0> \titlepage
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}\frametitle{Pourquoi les courbes elliptiques ?}
+\begin{itemize}
+\item Un outil classique en cryptographie est
+l'échange de clés de Diffie-Hellman, qui repose sur la relation
+\[ (g^a)^b = g^{ab} = (g^b)^a, \]
+valable dans le groupe multiplicatif des entiers modulo $p$.
+\item La sécurité repose sur le problème du \emph{logarithme discret}:
+étant donnés $g$ et~$g^a$, il est difficile de calculer $a$.
+\item Ce groupe multiplicatif est cependant vulnérable
+à certaines attaques spécifiques (GNFS, SNFS)
+qui le rendent sous-optimal.
+\item Solution : augmenter la taille de $p$...
+\item ... ou alors, remplacer le groupe multiplicatif
+par un groupe résistant à ces attaques.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Les courbes elliptiques en cryptographie}
+\begin{itemize}
+\item Proposées en 1985 par Koblitz et Miller.
+\item Fournissent un groupe abélien fini
+où le logarithme discret est \emph{difficile}
+(plus que dans les groupes multiplicatifs).
+\end{itemize}
+\begin{example}
+\begin{itemize}
+\item Pour un niveau de sécurité de 128~bits : une courbe de 256~bits.
+\item Taille équivalente en RSA $≈ 3\,072$ bits.
+\end{itemize}
+\end{example}
+\end{frame}
+
+\begin{frame}\frametitle{Le groupe des points d'une courbe elliptique}
+\begin{itemize}
+\item Une courbe elliptique est donnée par l'équation
+\[ y^2 = x^3 + a x + b \pmod{p}, \]
+où $p$ est un nombre premier ($\neq 2,3$) et $a, b$ sont deux paramètres.
+\item Les points de la courbe forment un groupe abélien
+(noté additivement).
+\item Le cardinal $N$ de ce groupe est environ $p$ :
+$\abs{N-(p+1)} ≤ 2\sqrt{p}$.
+\end{itemize}
+\begin{block}{}
+En général, le groupe des points d'une courbe elliptique
+se comporte comme un « groupe générique » :
+le logarithme discret a une complexité exponentielle.
+\end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Pourquoi standardiser ?}
+\begin{block}{}
+\emph{En général,} le groupe des points d'une courbe elliptique
+se comporte comme un « groupe générique » :
+le logarithme discret a une complexité \emph{exponentielle}.
+\end{block}
+\begin{itemize}
+\item Plus précisément, la complexité du logarithme discret
+est dominée par $\sqrt{q}$, où $q$ est
+le \emph{plus grand diviseur premier} du nombre de points de la courbe.
+\item Il est donc possible d'atteindre une sécurité de 128 bits
+avec une taille de clé de 256 bits.
+\begin{itemize}
+\item Solution : avoir un nombre de points (presque) premier.
+\end{itemize}
+\item Certaines courbes particulières sont plus vulnérables :
+le problème du logarithme discret peut être transféré
+dans un groupe plus facile.
+\begin{itemize}
+\item Solution : éviter ces cas particuliers.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Génération d'une courbe (I)}
+\begin{block}{}
+Ces solutions sont gourmandes en calculs,
+il n'est donc pas réaliste d'envisager
+fabriquer une nouvelle courbe à la volée pour chaque échange.
+\end{block}
+
+\begin{itemize}
+\item Miller-Rabin sur 3072 bits : 70 ms;
+\item SEA sur 256 bits : 4 s ; sur 384 bits : 30 s ; sur 512 bits : 2 min.
+\item Environ $1/2 \log p$ courbes à tester pour obtenir un cardinal premier : 10 minutes pour 256 bits\ldots
+\item \ldots et $1/2 (\log p)^2$ pour une courbe avec tordue sûre : 35 heures pour 256 bits!
+\item (D'autres paramètres doivent également être vérifiés pour la courbe finale.)
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Génération d'une courbe (II)}
+\begin{block}{}
+Il est possible de générer plus rapidement une courbe en utilisant la multiplication complexe.
+\end{block}
+
+\begin{itemize}
+\item Lenstra et Miele propose de trouver des solutions de l'équation de Pell donnant des paramètres premiers.
+\item Pour être efficace :
+\begin{itemize}
+\item se restreindre à des polynômes de classes pour lesquels les racines comlexes sont précalculées et représentées par des radicaux;
+\item cribler les solutions de l'équation.
+\end{itemize}
+\end{itemize}
+\begin{block}{}
+\begin{itemize}
+\item Cardinal premier sur 256 bits : 8 ms ;
+\item Courbe avec tordue sûre sur 256 bits : 50 ms.
+\end{itemize}
+\end{block}
+Malheureusement de telles courbes sont très spéciales !
+\end{frame}
+
+\begin{frame}\frametitle{Première phase de standardisation}
+Les premières courbes standardisées ont été produites
+au début des années 2000, c'est-à-dire
+une fois la recherche dans le domaine suffisamment avancée :
+\begin{itemize}
+\item possibilité de produire des courbes cryptographiques
+(Schoof, Elkies, Atkin) ;
+\item identification des classes de courbes faibles.
+\end{itemize}
+\begin{block}{}
+À notre connaissance, ces courbes sont toujours sûres.
+\end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Courbes standardisées}
+\begin{center}\begin{tableau}{lcll}
+\entete Année & &Courbes & Tailles \\
+2000 & \includegraphics[height=1em]{nsa} &NIST & 192, 224, 256, 384, 521\\
+2005 & & Brainpool & 160, 192, 224, 256, 320, 384, 512\\
+2010 & \includegraphics[width=1em]{oscca} &OSCCA & 256 \\
+2011 & \includegraphics[width=1em]{anssi} &ANSSI & 256 \\
+\end{tableau}\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Deuxième phase de standardisation}
+Mais de nouvelles préoccupations sont apparues depuis :
+\begin{itemize}
+\item doutes sur le processus de génération
+(possibilité de publier une courbe secrètement vulnérable ?) ;
+\item émergence des attaques latérales
+(\emph{« side-channel attacks »}) ;
+\item progrès scientifiques dans des domaines proches
+(logarithme discret multiplicatif\ldots) ;
+\item performances sous-optimales (courbes d'Edwards).
+\end{itemize}
+\begin{block}{Juin 2015}
+Le NIST organise un atelier sur le thème de
+la standardisation des courbes elliptiques.
+\end{block}
+\end{frame}
+
+\begin{frame}\frametitle{De nouvelles propositions académiques}
+\begin{center}\begin{tableau}{lcll}
+\entete Année & &Courbes & Tailles \\
+2006 & Bernstein & Curve25519 & 255\\
+2014& NXP, Microsoft Research & NUMS & 256, 384, 512 \\
+2014 & Bernstein, Lange & Curve41417 & 415 \\
+2015 & Hamburg & Ed448-Goldilocks & 448 \\
+\end{tableau}\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Courbes utilisées}
+\begin{itemize}
+\item En pratique, on trouve surtout dans la nature les courbes NIST.
+\item Parfois les courbes Brainpool.
+\item Et de plus en plus la courbe de Dan Bernstein :
+\begin{itemize}
+\item OpenSSL,
+\item OpenSSH,
+\item GnuPG,
+\item Signal Protocol\ldots
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Quelques restrictions}
+Les sujets suivants ne seront pas abordés :
+\begin{itemize}
+\item Les courbes définies sur des extensions de corps :
+\begin{itemize}
+\item attaque par restriction de Weil ;
+\item attaque par décomposition ;
+\item transfert du logarithme discret vers une courbe isogène faible.
+\end{itemize}
+\item Et en particulier les courbes binaires :
+\begin{itemize}
+\item D'autant plus que le logarithme discret est quasi-polynomial dans les corps de petite caractéristique.
+\end{itemize}
+\item Les courbes pour les couplages.
+\end{itemize}
+Toutes les courbes étudiées ici seront définies sur un corps premier et ordinaires.
+\end{frame}
+
+\section{Sécurité}
+
+\begin{frame}\frametitle{Aspects de la sécurité d'une courbe}
+Qu'est-ce que qu'une « bonne » courbe pour la cryptographie ?
+\begin{itemize}
+\item Le problème du logarithme discret est difficile.
+\item Les implémentations de la courbes sont résistantes
+(par exemple aux attaques par canaux auxiliaires).
+\item La courbe ne présente aucun signe particulier suspect.
+\item Il est possible de réaliser des implémentations optimisées.
+\item La courbe possède des propriétés particulières intéressantes (couplages).
+\end{itemize}
+\begin{block}{Conditions incompatibles}
+Certaines de ces conditions sont incompatibles entre elles,
+ce qui peut justifier l'existence de plusieurs (familles de) courbes.
+\end{block}
+\end{frame}
+
+\subsection{Difficulté intrinsèque du logarithme discret}
+
+\begin{frame}\frametitle{Notations}
+\begin{itemize}
+\item Dans tout ce qui suit, $E$ désigne la courbe d'équation
+\[ y^2 = x^3 + a x + b\]
+définie sur le corps $k = \F_p$, et $N = \abs{E(\F_p)}$.
+On considère la multiplication $n · P$ pour un scalaire $n$ secret.
+\bigskip
+\item On note $\prob(X)$ la probabilité d'un événement~$X$
+comprise, selon le contexte,
+sur l'ensemble des courbes sur $\F_p$ avec $p$ fixé,
+ou sur l'ensemble des courbes sur $\F_p$ avec $p$ de taille fixée.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Difficulté du logarithme discret}
+\begin{block}{}
+Si le logarithme discret est facile, alors
+toute implémentation de la courbe sera faible.
+\end{block}
+\begin{itemize}
+\item Il existe des attaques contre des groupes génériques d'ordre $N$,
+de complexité $\sqrt{N}$.
+\item Pour qu'une courbe soit correcte,
+on exige donc qu'il n'existe pas de meilleure attaque.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Courbes singulières}
+
+Si $Δ = 4 a^3 + 27 b^2 = 0$, alors
+la courbe d'équation $y^2 = x^3 + a x + b$ n'est pas une courbe elliptique :
+c'est une cubique singulière.
+
+Le groupe des points réguliers est alors isomorphe à
+un groupe additif ou multiplicatif,
+et le logarithme discret est sous-exponentiel, voire polynomial.
+
+\begin{block}{}
+Il est impératif que $Δ ≠ 0$ (ce qui arrive avec $\prob ≈ 1$).
+\end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Grand sous-groupe premier}
+\begin{itemize}
+\item Il existe des attaques génériques de complexité~$O(√q)$,
+où $q$ est le plus grand diviseur premier de $N$.
+\item Une courbe sûre doit donc avoir $q ≈ N$ ; idéalement, $q = N$.
+\item Ceci nécessite de calculer $N$,
+ce qui est une tâche relativement coûteuse.
+\item La probabilité qu'une courbe aléatoire ait un ordre premier
+est approximativement la même que celle
+qu'un nombre aléatoire de la taille de $p$ soit premier,
+soit $\prob ≈ \frac{1}{\log p}$.
+\end{itemize}
+\begin{block}{}
+\begin{itemize}
+\item Il est impératif que $N$ ait un grand facteur premier.
+\item Calculer $N$ est l'une des étapes coûteuses
+de la génération de la courbe.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Transfert additif}
+\begin{itemize}
+\item Si $N = p$ alors il existe un homomorphisme de groupe calculable
+vers le groupe additif $\F_p$.
+\item Le logarithme discret est alors de complexité polynomiale.
+\begin{block}{}
+Il est impératif que $N ≠ p$ ($\prob = 1$).
+\end{block}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Transfert multiplicatif}
+\begin{itemize}
+\item Soit $e$ le \emph{degré de plongement},
+c.-à-d. le plus petit entier tel que $N$ divise $p^e - 1$ ;
+alors il existe un homomorphisme de groupe calculable vers
+le groupe multiplicatif de $\F_{p^e}$,
+et donc le logarithme discret a une complexité
+sous-exponentielle relativement à $p^e$.
+\item Solution : si $e ≈ p$ alors cette
+complexité est exponentielle relativement à $p$.
+\begin{block}{}
+\begin{itemize}
+\item Il est impératif que $e$ soit assez grand ($\prob ≈ 1$).
+\item
+Pour calculer $e$, il faut connaître la factorisation de $q-1$,
+ce qui est sous-exponentiel
+(c'est asymptotiquement l'étape la plus coûteuse).
+\item Il peut être suffisant de montrer que $e$ est assez grand
+sans le calculer explicitement.
+\end{itemize}
+\end{block}
+\item (Cette condition exclut les courbes supersingulières.)
+\end{itemize}
+\end{frame}
+
+\subsection{Résistance des implémentations de la courbe}
+\begin{frame}{Résistance des implémentations de la courbe}
+\begin{block}{}
+Il existe des courbes pour lesquelles,
+bien que le logarithme discret soit difficile,
+certaines implémentations ou certains protocoles sont faibles.
+\end{block}
+Exemple : multiplication par l'algorithme « doublement et addition »
+non protégé.
+\begin{center}
+\hspace*{.5em}\includegraphics[width=24em,height=8em]{spa.pdf}
+
+ \begin{tabular}{*{8}{|p{1.7em}}|} 
+ \hline
+ D&A&D&D& D&A&D&A\\
+ \hline
+ \multicolumn{2}{|c|}{1} &
+ \vrule width 0pt height 2ex
+ 0 & 0 & \multicolumn{2}{|c|}{1} & \multicolumn{2}{|c|}{1} \\
+ \hline
+ \end{tabular}
+\end{center}
+\end{frame}
+\begin{frame}\frametitle{Contre-mesures classiques (I)}
+\begin{itemize}
+\item Contre les attaques simples :
+élimination des branches conditionnelles sur un élément secret.
+\begin{itemize}
+\item double and always add :
+\[ \begin{split}
+&Q ← P;\\
+&\texttt{for $i = ℓ-2,…,0$:}\\
+&\qquad Q_0 ← 2 Q;\; Q_1 ← Q_0 + P;\; Q ← Q_{n_i};
+\end{split} \]
+\item échelle de Montgomery:
+\[\begin{split}
+&Q_0 ← P; Q_1 ← 2P;\\
+&\texttt{for $i = ℓ-2,…,0$:}\\
+&\qquad Q_{1-n_i} ← Q_0 + Q_1;\; Q_{n_i} ← 2 Q_{n_i};
+\end{split}\]
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Contre-mesures classiques (II)}
+\begin{itemize}
+\item Contre les attaques différentielles :
+ne pas manipuler plusieurs fois le même élément secret.
+\begin{itemize}
+\item masquage aléatoire du secret :
+\begin{itemize}
+\item $n ← n + r · N$ avec $r$ aléatoire ;
+\item $n = \lceil n / r \rceil + n \pmod{r}$ avec $r$ aléatoire ;
+\end{itemize}
+\item masquage aléatoire de la courbe ($a ← r^4 a, b ← r^6 b$) ;
+\item masquage aléatoire du point ($(x:y:1) ← (rx:ry:r)$)\ldots
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Loi de groupe unifiée (I)}
+Certaines courbes admettent une loi d'addition \emph{unifiée} et efficace :
+il existe un système de coordonnées permettant d'effectuer
+les opérations $P + Q$, $2 P$, $P + 0$ par les mêmes formules.
+\begin{itemize}
+\item Courbes d'Edwards : $x^2 + y^2 = c^2 (t^2 + d z^2)$, $xy = zt$;
+\item Courbes de Jacobi : $y^2 = z^2 + 2 a x^2 + b t^2$, $x^2 = zt$...
+\end{itemize}
+
+Ceci est possible sous certaines conditions sur la courbe :
+\begin{itemize}
+\item Edwards : point de $4$-torsion, $\prob = 17/48$;
+\item Jacobi : point de $2$-torsion, $\prob = 2/3$...
+\end{itemize}
+
+Ceci ajoute une couche de protection contre les attaques simples.
+\end{frame}
+
+\begin{frame}\frametitle{Loi de groupe unifiée (II)}
+\begin{itemize}
+\item En réalité, il est possible de développer de telles lois d'addition \emph{unifiée} pour toute forme de courbe en s'imposant certaines contraintes.
+\item Le problème est de les rendre efficaces.
+\end{itemize}
+\begin{block}{}
+Rene et al. ont proposé une loi d'addition unifiée relativement efficace
+pour calculer dans un sous-groupe de cardinal impair
+de courbes sous forme de Weierstrass.
+\end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Points spéciaux}
+Un \emph{point spécial} est un point de la courbe
+de la forme $(0, y)$ ou $(x, 0)$.
+
+En présence de tels points, certaines implémentations
+peuvent faire fuir de l'information\bib{Goubin 2003}.
+
+\begin{itemize}
+\item Des points spéciaux de la forme $(0, y)$ existent
+si $b$ est un carré dans~$k$ ($\prob = 1/2$).
+\item Des points spéciaux de la forme $(x, 0)$ existent
+si $N$ est pair ($\prob = 1$ si $N$ premier).
+\end{itemize}
+
+\begin{block}{}
+Il est préférable que la courbe ne contienne pas de tels points spéciaux.
+\end{block}
+\begin{itemize}
+\item (Des points spéciaux de la forme $(0, y)$ existent toujours sur la courbe
+ou sa tordue ($\prob = 1$).)
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Corps de base spéciaux}
+De nombreuses courbes standardisées ont des corps de base spéciaux :
+\[\begin{split} p_{192} &= 2^{192} - 2^{64} - 1\\
+&= \texttt{\small 0xfffffffffffffffffffffffffffffffeffffffffffffffff}.
+\end{split}\]
+\begin{itemize}
+\item Puisque $N = p + O(√p)$,
+les premiers bits de~$N$ sont les premiers bits de~$p$.
+\item Les premiers bits de $n + r · N$
+sont les premiers bits de~$r$.
+\item Ceci rend la protection par masquage de~$n$
+insuffisante\bib{DK2005, BPSY2014, FRV2014, SW2015...}.
+\end{itemize}
+
+\begin{block}{}
+Il est préférable que le corps de base ne soit pas d'une forme
+spéciale.
+\end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Petit sous-groupe}
+Si la courbe possède un petit sous-groupe, alors
+il est possible d'obtenir de l'information
+sur des données secrètes\bib{Lim-Lee 97}.
+\begin{itemize}
+\item Si le point de base $G$ est d'ordre $m$ avec $m$ petit,
+alors l'observation de $a G$ permet de retrouver la valeur $a \pmod{m}$.
+\item Suppose un adversaire capable de fournir un point de base
+de son choix.
+\end{itemize}
+\begin{block}{}
+Il est préférable que le groupe des points de la courbe
+soit d'ordre premier ($\prob = 1$ si $N$ premier).
+\end{block}
+\end{frame}
+\begin{frame}\frametitle{Sécurité de la courbe tordue}
+La \emph{courbe tordue} de $E$ est la courbe~$E'$ d'équation
+\[ d y^2 = x^3 + a x + b, \qquad
+  \text{où $d$ n'est pas un carré dans~$\F_p$.} \]
+Pour tout~$x ∈ \F_p$ tel que~$x^3+ax+b ≠ 0$,
+il existe un point d'abscisse~$x$ sur
+exactement une des deux courbes $E$ et~$E'$.
+
+Dans certains cas, un adversaire peut injecter une abscisse appartenant
+à la courbe tordue\bib{Fouque-Lercier-Réal-Valette 2008} :
+\begin{itemize}
+\item protocole mal conçu (compression de point),
+\item manque de tests dans l'implémentation,
+\item attaque par injection de faute...
+\end{itemize}
+
+\begin{block}{}
+Il est préférable que la courbe tordue soit sûre
+($\prob ≈ \frac{1}{\log p}$).
+\end{block}
+\end{frame}
+
+
+\subsection{« Généricité » de la courbe}
+
+\begin{frame}\frametitle{Résistance à de possibles attaques futures}
+\begin{itemize}
+\item Et s'il existait des familles faibles ?
+\item Éviter de produire des courbes trop « particulières ».
+\item Vérifier des propriétés satisfaites avec~$\prob ≈ 1$.
+\item En particulier, vérifier que différents nombres attachés à la
+courbe sont « assez grands » ou « peu friables ».
+\item Plus précisément, $\prob ≈ 1 - 1/\sqrt{p}$
+pour que produire une telle courbe
+soit aussi difficile qu'attaquer le logarithme discret.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Discriminant du corps des endomorphismes}
+\begin{itemize}
+\item Le \emph{corps des endomorphismes} de~$E$ est
+l'extension quadratique~$K$ de~$ℚ$ engendrée par le Frobenius~$φ$.
+\item L'\emph{anneaux des endomorphismes} $\mathcal{O}$ de~$E$ est un ordre dans $K$.
+\item Le polynôme minimal de~$φ$ est~$φ^2 - t φ + p$;
+son discriminant est~$D_{φ} = t^2 - 4p < 0$.
+\item Le discriminant de~$K$ est donné par $D_{φ} = D_{K} f_{φ}^2$,
+où $D_{K}$ ou $D_{K}/4$ est sans facteur carré et $D_K | D_{\mathcal{O}} | D_{φ}$.
+\end{itemize}
+\begin{block}{}
+En général, $\abs{D_K} ≈ p$ ;
+en particulier, $\abs{D_{K}} ≥ √p$ avec $\prob ≈ 1-O(1/√p)$.
+\end{block}
+\begin{itemize}
+\item Cette condition élimine les valeurs~$D_{K} = -3$ et~$-4$,
+correspondant aux $j$-invariants $0$ et~$1728$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Nombre de classes}
+Le nombre de classes~$h_K$ de~$K$ intervient dans divers
+algorithmes liés à~$E$ :
+\begin{itemize}
+\item c'est le degré du polynôme de Hilbert à factoriser pour la
+théorie de la multiplication complexe ;
+\item c'est le plus petit degré d'une extension $L/ℚ$
+sur laquelle $E$ (ou une courbe isogène) admet un relèvement fidèle.
+\end{itemize}
+Ce nombre est minoré en fonction de $D_{K}$:
+\[ h_K ≥ C \frac{\sqrt{\abs{D_K}}}{\log \abs{D_K}}. \]
+\begin{itemize}
+\item[$⇒$] aucune condition supplémentaire sur $h_K$ n'est a priori
+nécessaire.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Friabilité du nombre de classes}
+\begin{itemize}
+\item Pour éviter de potentielles attaques utilisant la décomposition
+du groupe de classes de $K$ en facteurs élémentaires, on souhaite que
+$h_K$ ne soit pas friable (= n'ait pas que des petits facteurs premiers).
+\bigskip
+\item Un nombre aléatoire $n$ est $n^{1/u}$-friable avec
+probabilité~$\prob ≈ u^{-u}$.
+\item Par conséquent, $h_K$ a une probabilité négligeable d'être
+$(\log p)^{O(1)}$-friable.
+\begin{block}{}
+En général, $h_K$ a au moins un diviseur premier~$≥ (\log p)^{O(1)}$.
+\end{block}
+\item Calculer (et factoriser) $h_K$ est sous-exponentiel\bib{Biasse
+2010}, mais vérifier que $h_K$ n'est pas logarithmiquement friable
+est polynomial.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Degré de plongement}
+\begin{itemize}
+\item Le degré de plongement est l'ordre de $p$
+dans le groupe multiplicatif $\F_q^{×}$.
+\begin{block}{}
+Le degré de plongement est~$≥ p^{1/4}$
+avec probabilité~$\prob ≥ 1-1/√p$.
+\end{block}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Friabilité de la courbe tordue}
+\begin{itemize}
+\item Si la courbe $E$ a pour cardinal $N = p + 1 - t$,
+alors sa tordue $E'$ a pour cardinal $N' = p + 1 + t$.
+\item Le cardinal $N'$ est $p^{1/u}$-friable
+avec probabilité $\prob ≈ u^{-u}$.
+\begin{block}{}
+En général, $N'$ a au moins un diviseur premier
+de taille polynomiale en~$\log p$.
+\end{block}
+\item Le choix du seuil $u$ est délicat ; par exemple, pour $p≈
+2^{256}$, une probabilité~$1/\sqrt{p}$ correspond aux nombres
+$727$-friables...
+\item fixer la borne de friablité est plus satisfaisant:
+par exemple, $N'$ est $p^{1/4}$-friable avec probabilité $1/256$.
+\item Variante plus stricte de cette condition : $N'$ premier (= courbe
+tordue sûre), mais la courbe devient \og spéciale \fg.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Structure multiplicative du corps de base}
+\begin{itemize}
+\item La structure multiplicative de $\F_p^{×}$ dépend
+de la factorisation de~$p-1$.
+\item Même si elle n'est pas liée au logarithme discret sur une courbe,
+en général $p-1$ a au moins un grand diviseur premier.
+\begin{block}{}
+$p-1$ a un diviseur premier $≥ (\log p)^2$
+avec probabilité $≥1-1/√p$.
+\end{block}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Corps de base spécial}
+\begin{itemize}
+\item Certaines courbes utilisent des corps de base
+dont la cardinalité est un nombre premier « spécial » :
+une valeur d'un « petit » polynôme.
+\begin{example}
+NIST $p_{192} = 2^{192} - 2^{64} - 1$ = $x^3 - x - 1$ où $x=2^{64}$.
+\end{example}
+\item Le logarithme discret \emph{multiplicatif} est plus facile
+dans de tels corps que dans le cas général.
+\item Il est envisageable que des attaques analogues soient découvertes
+sur les courbes elliptiques.
+\begin{block}{}
+Il est souhaitable de choisir un nombre premier pseudo-aléatoire.
+\end{block}
+\item Il est impossible de  vérifier si un nombre
+est une valeur d'un « petit » polynôme...
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle {Résumé (I)}
+\begin{center}\begin{tableau}{*{5}{l}}
+\entete       & NIST & Brainpool & ANSSI & OSCCA\\
+$N$ premier   &  ✓   & ✓         & ✓     & ✓   \\
+$p$ ordinaire &      & ✓         & ✓     & ✓   \\
+Loi unifiée   &  ✓   & ✓         & ✓     & ✓    \\
+Tordue sûre   &      &           &       &      \\
+Générique & &✓&✓&✓ \\
+\end{tableau}\end{center}
+\end{frame}
+
+\begin{frame}\frametitle {Résumé (II)}
+\begin{center}\begin{tableau}{*{4}{l}}
+\entete       & NUMS & Curve25519/41417 & Ed448-Goldilocks\\
+$N$ premier   & & &\\
+$p$ ordinaire & & &\\
+Loi unifiée   &✓ &✓ &✓\\
+Tordue sûre   &✓ &✓ &✓\\
+Générique  & & &\\
+\end{tableau}\end{center}
+\end{frame}
+
+\subsection{Facilitation de l'implémentation}
+
+\begin{frame}\frametitle{Facilitation de l'implémentation}
+Certains choix de courbes permettent de disposer d'implémentations
+plus rapides ou plus commodes.
+\end{frame}
+
+\begin{frame}\frametitle{Coordonnées jacobiennes rapides}
+Une courbe elliptique de la forme $y^2 = x^3 - 3 x + b$
+(c'est-à-dire telle que $a=-3$)
+permet d'économiser 2 des 10 multiplications requises
+pour une addition de points.
+
+\bigskip
+Une courbe aléatoire sur $\mathbb F_p$ est isomorphe avec une courbe
+$a=-3$ avec probabilité
+\begin{itemize}
+\item $\prob = 1/4$ si $p ≡ +1 \pmod{4}$,
+\item $\prob = 1/2$ si $p ≡ -1 \pmod{4}$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Nombre de points}
+Si la courbe a $N < p$ points,
+alors un élément de $ℤ/Nℤ$ peut être représenté par un nombre
+de la même taille que $p$.
+
+\bigskip
+Exactement la moitié des courbes satisfont cette condition.
+\end{frame}
+
+\begin{frame}\frametitle{Racines carrées rapides}
+Si $p ≡ -1 \pmod{4}$ (ou $p ≡ 5 \pmod{8}$) alors
+calculer des racines carrées modulo~$p$ est plus facile,
+ce qui permet de simplifier la compression de points.
+\end{frame}
+
+\begin{frame}\frametitle{Arithmétique dédiée}
+\begin{itemize}
+\item Certains choix de corps de base,
+comme les nombres premiers « spéciaux » des courbes NIST,
+permettent une arithmétique plus rapide.
+\bigskip
+\item De même, choisir des petites valeurs pour les paramètres $a$ et $b$
+permet d'accélérer l'arithmétique de la courbe :
+c'est le cas de toutes les propositions académiques récentes.
+\end{itemize}
+\end{frame}
+
+\subsection{Diversité}
+\begin{frame}\frametitle{Différents critères pour différents usages}
+\begin{itemize}
+\item Les critères précédemment énoncés ne peuvent être tous vérifiés.
+\item En particulier, compromis vitesse/généricité.
+\item Mais aussi, facilité d'implémentation/protection latérale.
+\end{itemize}
+\begin{block}{}
+Il est souhaitable d'utiliser (et de normaliser) différentes courbes
+pour différents usages !
+\end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Zoo réel (I)}
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=.4\hsize]{weierstrass} & \includegraphics[width=.4\hsize]{edwards} \\
+Weierstrass & Edwards \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Zoo réel (II)}
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=.4\hsize]{jacobi} & \includegraphics[width=.4\hsize]{hessian} \\
+Jacobi & Hess \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Zoo fini (I)}
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=.45\hsize]{frog} & \includegraphics[width=.45\hsize]{cockroach} \\
+Grenouille & Cafard \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Zoo fini (II)}
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=.45\hsize]{walrus} & \includegraphics[width=.45\hsize]{bunny} \\
+Morse & Lapin \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\section{Transparence}
+
+\begin{frame}\frametitle{Transparence}
+Afin de lever tout soupçon de manipulation, on cherche à définir
+un programme \emph{déterministe} pour échantillonner une courbe.
+\begin{itemize}
+\item Processus de génération entièrement reproductible.
+\item Peut être un générateur pseudo-aléatoire (généricité)
+ou une énumération des petites valeurs (efficacité).
+\item Possibilité de vérifier facilement qu'une courbe est issue
+d'un tel processus sans le rejouer intégralement.
+\end{itemize}
+\end{frame}
+
+\subsection{Le processus de génération}
+
+\begin{frame}\frametitle{Non-manipulabilité}
+\begin{itemize}
+\item Ce processus permet de produire \emph{déterministement}
+une courbe elliptique cryptographique à partir
+\begin{itemize}
+\item d'une fonction d'échantillonnage des courbes
+(y compris graine éventuelle).
+\item et d'un ensemble de conditions de sécurité (y compris bornes numériques),
+\end{itemize}
+\item Parmi les conditions de sécurité, seules quelques-unes
+influenceront probablement le résultat final :
+\begin{itemize}
+\item sécurité ou non de la courbe tordue,
+\item et peut-être le choix des bornes de friabilité.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Générateur pseudo-aléatoire}
+Un schéma classique de génération de courbe procède à la façon d'un générateur pseudo-aléatoire :
+\begin{itemize}
+\item Initialiser un état courant à l'aide d'une graine \og aléatoire \fg.
+\item Tant qu'une courbe correcte n'a pas été échantillonnée :
+\begin{itemize}
+\item Mettre à jour l'état courant et échantillonner de nouveaux coefficients à l'aide d'une fonction de hachage.
+\item Tester la courbe.
+\end{itemize}
+\item (Changer de nombre premier à chaque courbe peut aider pour obtenir une tordue sûre.)
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Brainpool (I)}
+
+\begin{itemize}
+\item Le processus Brainpool utilise SHA-1 pour la mise à jour et l'état interne.
+
+\bigskip
+
+\item Les critères de sécurité sont:
+\begin{enumerate}
+\item $N$ premier;
+\item $N \neq p$;
+\item $(N-1)/e < 100$;
+\item $h_K > 10^7$.
+\end{enumerate}
+
+\bigskip
+
+\item (Le processus NIST est relativement similaire.)
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Brainpool (II)}
+Un nombre premier pseudo-aléatoire est généré:
+\begin{enumerate}
+\item Initialiser l'état interne $s_p$ avec une  graine de 160 bits.
+\item Échantillonner un nombre $c$ et trouver le plus petit premier $p \equiv 3 \pmod{4}$ plus grand que $c$.
+\item Si $p$ n'est pas de la taille exacte voulue, mettre à jour $s_p$ et recommencer.
+\end{enumerate}
+
+Enfin une courbe avec des coefficients pseudo-aléatoires
+et un point base aléatoire sont générés.
+\end{frame}
+
+\begin{frame}\frametitle{Brainpool (III)}
+\begin{enumerate}
+\item L'état courant $s_{ab}$ est initialisé à l'aide d'une  graine de 160 bits.
+\item Échantillonner $A$.
+\item Si $-3 \neq A*Z^4 \pmod{p}$, mettre à jour $s_{ab}$ et recommencer.
+\item Mettre à jour $s_{ab}$.
+\item Échantillonner $B$.
+\item Si $B$ est un carré modulo $p$, mettre à jour $s_{ab}$ et recommencer.
+\item Si la courbe est singulière, mettre à jour $s_{ab}$ et recommencer.
+\item Si la courbe ne vérifie pas les critères de sécurité, mettre à jour $s_{ab}$ et recommencer.
+\item Mettre à jour $s_{ab}$.
+\item Échantillonner $k$.
+\item Calculer $\pm Q$ de plus petite abscisse.
+\item Calculer $G = k \cdot \pm Q$.
+\end{enumerate}
+\end{frame}
+
+
+\subsection{Graine}
+
+\begin{frame}\frametitle{Choix de la graine (I)}
+\begin{itemize}
+\item Quand l'utilisation d'une graine est nécessaire, il faut être capable de le justifier : elle ne peut être aléatoire.
+\item Habituellement les décimales d'une constante classique sont utilisées ($\pi$, $e$).
+\item Ou le haché d'une citation littéraire ou d'une phrase en relation avec l'utilisation de la courbe.
+\item Mais le nombre de tels choix possibles est grand\ldots
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Choix de la graine (II)}
+\begin{itemize}
+\item Pour éviter tout soupçon sur le choix de la graine :
+\begin{itemize}
+\item utiliser un schéma d'engagement sur des fragments de la graine ;
+\item utiliser un résultat hors de portée de manipulation
+(cours de la Bourse, résultat sportif, loterie publique, Bitcoin).
+\end{itemize}
+\item Mais cela n'est pas non plus satisfaisant pour certains...
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Choix de la graine (III)}
+\begin{center}
+%\includegraphics[width=0.7\hsize]{keyboard_cat}
+\animategraphics[loop,autoplay,width=0.7\hsize]{12}{animated_cat/keyboard_cat-}{0}{93}
+\end{center}
+\end{frame}
+
+\subsection{Manipulation et rigidité}
+
+\begin{frame}\frametitle{Manipulation}
+\begin{itemize}
+\item Le choix des processus de mise à jour de l'état courant et d'échantillonnage des courbes est relativement vaste.
+\item Cette latitude pourrait être utilisée pour s'assurer que la courbe finale tombe dans une classe faible.
+\begin{block}{DJB about Brainpool}
+\small
+Several unexplained decisions: Why SHA-1 instead of, e.g., RIPEMD-160 or SHA-256? Why use 160 bits of hash input independently of the curve size? Why pi and e instead of, e.g., sqrt(2) and sqrt(3)? Why handle separate key sizes by more digits of pi and e instead of hash derivation? Why counter mode instead of, e.g., OFB? Why use overlapping counters for A and B (producing the repeated 26DC5C6CE94A4B44F330B5D9)? Why not derive separate seeds for A and B?
+\end{block}
+\item Courbes \texttt{BADA55EC}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Rigidité}
+\begin{itemize}
+\item Certains auteurs proposent donc de restreindre ces degrés de libertés en échantillonnant les courbes en fonction des valeurs absolues de leurs coefficients.
+\item Plus de choix de fonctions de hachage ou de graine.
+\item (Un autre avantage est d'obtenir de petits coefficients pour la courbe finale.)
+\item Il reste cependant des choix arbitraires à faire...
+\end{itemize}
+\end{frame}
+
+\subsection{Certificats de génération}
+
+\begin{frame}\frametitle{Certificats de génération}
+
+Fournir un \emph{certificat} permettant
+de vérifier les propriétés sans refaire tous les calculs :
+\begin{itemize}
+\item nombre de points,
+\item discriminant et nombre de classes,
+\item degré de plongement.
+\end{itemize}
+Toutes les étapes du processus sont certifiées,
+y compris les courbes rejetées.
+\end{frame}
+
+\begin{frame}\frametitle{Nombre de points premier}
+\begin{itemize}
+\item On connaît la borne de Hasse-Weil: $\abs{N-(p+1)} ≤ 2√p$.
+\medskip
+\item Si $G ≠ 0$ est tel que $q · G = 0$ avec $q ≥ p-2√p+1$ premier,
+alors $q = N$.
+\medskip
+\item Certificat de primalité de $N$: $(G, q, Π)$,
+où $Π$~est une preuve de primalité de~$q$.
+\begin{itemize}
+\item Pour les tailles usuelles de courbes elliptiques,
+$Π$ peut être laissée vide ;
+en effet, pour ces tailles, une preuve directe par APR-CL
+est probablement plus rapide qu'une preuve par certificat ECPP.
+\end{itemize}
+\medskip
+\item Ce certificat est produit une seule fois, pour la courbe finale.
+\item Taille du certificat et vérification en $O(\log^2 p)$ opérations.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Nombre de points composé (I)}
+\begin{itemize}
+\item Si $n < 2 (√p-1)^2$ est composé et si $P ≠ 0$, $n · P = 0$,
+alors l'ordre de la courbe est composé.
+\begin{itemize}
+\item preuve: soit $d = \gcd (n, N)$; alors $d ≠ 1$ car~$P ≠ 0$.
+Si $d ≠ N$ alors $d$~est un diviseur strict de~$N$.
+Si $d = N$ alors $N$~divise~$n$ ; puisque $n/2 < (√p-1)^2$,
+on a nécessairement~$N = n$, qui est composé.
+\end{itemize}
+\item Certificat de composition de~$N$ : $(n, c, P)$,
+où $c$~est un témoin de composition (Miller-Rabin) de~$n$.
+\item Complexité pour chacune des $O(\log p)$ ou $O(\log^2 p)$ courbes :
+\begin{itemize}
+\item production du certificat : $O(\log p)$~multiplications;
+\item taille du certificat : $O(\log p)$;
+\item vérification : $O(\log p)$~multiplications.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Nombre de points composé (II)}
+\begin{itemize}
+\item En pratique, le calcul du nombre de points $N$
+se fait en calculant $N \pmod{ℓ}$ pour de petits nombres premiers~$ℓ$.
+\item Si on trouve $N ≡ 0 \pmod{ℓ}$, on peut arrêter le calcul
+pour cette courbe !
+\bigskip
+\item Dans ce cas, on trouve un polynôme $f_{ℓ}$, de degré~$O(ℓ)$,
+dont les racines sont les abscisses de points de $ℓ$-torsion.
+\item Trouver une racine de ce polynôme (par Cantor-Zassenhaus)
+a un coût comparable à celui du calcul de $N \pmod{ℓ}$.
+\item Dans ce cas, $(ℓ, P)$ est un certificat de composition.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Discriminant}
+\begin{itemize}
+\item Le calcul du discriminant nécessite de factoriser
+le nombre~$D_{φ} = t^2 - 4p$.
+\item C'est asymptotiquement l'une des étapes dominantes
+du processus de génération de la courbe ($L(1/3)$).
+\item Certificat : la factorisation de $D_{φ}$ (vérification quadratique).
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Nombre de classes}
+\begin{itemize}
+\item Le calcul exact du nombre de classes est
+coûteux
+($L(1/2)$, records à 110 chiffres décimaux).
+\item Mais la certification simple (quadratique avec factorisation et générateurs).
+\item Pour des grandes tailles de corps de base hors de portée :
+\begin{itemize}
+\item Il suffit encore d'un élément pour prouver que le nombre de classes est
+suffisamment grand et non-friable.
+\item Il est impossible de prouver réalistement que la courbe
+a été rejetée pour cause de nombre de classes trop petit ou trop friable.
+\item Solution : générer quelques éléments (déterministes) du groupe de classes
+et prouver que l'on ne peut pas prouver avec ces éléments
+que le nombre de classes est assez grand.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Exemple}
+\begin{itemize}
+\item Fonction d'échantillonnage pour une graine~$s$:
+\begin{itemize}
+\item $p$ = le plus petit premier $≥ s$;
+\item $g$ = le plus petit générateur de $\F_p^{×}$;
+\item courbes de la forme $y^2 = x^3 - 3x + b$, $b = g, g^2, …$.
+\end{itemize}
+\bigskip
+\item Conditions :
+\begin{itemize}
+\item $N$ et $N'$ premiers ;
+\item $Δ ≠ 0$, $N, N' ≠ p, p + 1$;
+\item degré de plongement de~$E$, $E'$ au moins~$p^{1/4}$;
+\item nombre de classes $≥ p^{1/4}$.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Exemple de certificat}
+Pour la graine $s = 2015$: $p = 2017$, $g = 5$,
+
+\begin{block}{\small\tt Curve}\small\tt
+(2017, -3, 625)\\
+order = 2063, point = (0, 25)\\
+twist\_order = 1973\\
+disc\_factors = \{6043\}\\
+class\_number = 9, form = (17,3,89)\\
+embedding\_degree = 1031, factors = \{2, 1031\}\\
+twist\_embedding\_degree = 493, factors = \{2, 17, 29\}
+\end{block}
+\vskip -1.7em
+
+\begin{block}{\small\tt Rejected curves}\small\tt
+((2017, -3, 5), composite, 2065, witness, 1679,
+  point, (1,258))\\
+((2017, -3, 25), torsion\_point, 3, point, (448, 288))\\
+((2017, -3, 125), torsion\_point, 2, point, (982, 0))
+\end{block}
+\end{frame}
+
+\begin{frame}[standout]
+\Huge \textbf{Questions ?}
+\end{frame}
+\end{document}
