@@ -19,7 +19,7 @@
 \title[Quelle courbe elliptique ?]{Quelle courbe elliptique pour la cryptographie ?}
 \author[J.-P. Flori]{Jean-Pierre Flori, Jérôme Plût}
 \institute[ANSSI]{ANSSI/SDE/ST/LCR}
-\date[16/12/2016]{Vendredi 16 décembre 2016}
+\date[20/01/2017]{Vendredi 20 janvier 2017}
 
 \begin{frame}<handout:0> \titlepage
 \end{frame}
@@ -238,8 +238,6 @@ ce qui peut justifier l'existence de plusieurs (familles de) courbes.
 \end{block}
 \end{frame}
 
-\subsection{Difficulté intrinsèque du logarithme discret}
-
 \begin{frame}\frametitle{Notations}
 \begin{itemize}
 \item Dans tout ce qui suit, $E$ désigne la courbe d'équation
@@ -253,6 +251,9 @@ sur l'ensemble des courbes sur $\F_p$ avec $p$ fixé,
 ou sur l'ensemble des courbes sur $\F_p$ avec $p$ de taille fixée.
 \end{itemize}
 \end{frame}
+
+\subsection{Difficulté intrinsèque du logarithme discret}
+
 
 \begin{frame}\frametitle{Difficulté du logarithme discret}
 \begin{block}{}
@@ -399,6 +400,26 @@ ne pas manipuler plusieurs fois le même élément secret.
 \end{itemize}
 \end{frame}
 
+\begin{frame}\frametitle{Corps de base spéciaux}
+De nombreuses courbes standardisées ont des corps de base spéciaux :
+\[\begin{split} p_{192} &= 2^{192} - 2^{64} - 1\\
+&= \texttt{\small 0xfffffffffffffffffffffffffffffffeffffffffffffffff}.
+\end{split}\]
+\begin{itemize}
+\item Puisque $N = p + O(√p)$,
+les premiers bits de~$N$ sont les premiers bits de~$p$.
+\item Les premiers bits de $n + r · N$
+sont les premiers bits de~$r$.
+\item Ceci rend la protection par masquage de~$n$
+insuffisante\bib{DK2005, BPSY2014, FRV2014, SW2015...}.
+\end{itemize}
+
+\begin{block}{}
+Il est préférable que le corps de base ne soit pas d'une forme
+spéciale.
+\end{block}
+\end{frame}
+
 \begin{frame}\frametitle{Loi de groupe unifiée (I)}
 Certaines courbes admettent une loi d'addition \emph{unifiée} et efficace :
 il existe un système de coordonnées permettant d'effectuer
@@ -450,26 +471,6 @@ Il est préférable que la courbe ne contienne pas de tels points spéciaux.
 \item (Des points spéciaux de la forme $(0, y)$ existent toujours sur la courbe
 ou sa tordue ($\prob = 1$).)
 \end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Corps de base spéciaux}
-De nombreuses courbes standardisées ont des corps de base spéciaux :
-\[\begin{split} p_{192} &= 2^{192} - 2^{64} - 1\\
-&= \texttt{\small 0xfffffffffffffffffffffffffffffffeffffffffffffffff}.
-\end{split}\]
-\begin{itemize}
-\item Puisque $N = p + O(√p)$,
-les premiers bits de~$N$ sont les premiers bits de~$p$.
-\item Les premiers bits de $n + r · N$
-sont les premiers bits de~$r$.
-\item Ceci rend la protection par masquage de~$n$
-insuffisante\bib{DK2005, BPSY2014, FRV2014, SW2015...}.
-\end{itemize}
-
-\begin{block}{}
-Il est préférable que le corps de base ne soit pas d'une forme
-spéciale.
-\end{block}
 \end{frame}
 
 \begin{frame}\frametitle{Petit sous-groupe}
@@ -525,6 +526,33 @@ soit aussi difficile qu'attaquer le logarithme discret.
 \end{itemize}
 \end{frame}
 
+\begin{frame}\frametitle{Degré de plongement}
+\begin{itemize}
+\item Le degré de plongement est l'ordre de $p$
+dans le groupe multiplicatif $\F_q^{×}$.
+\begin{block}{}
+Le degré de plongement est~$≥ p^{1/4}$
+avec probabilité~$\prob ≥ 1-1/√p$.
+\end{block}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Friabilité de la courbe tordue}
+\begin{itemize}
+\item Si la courbe $E$ a pour cardinal $N = p + 1 - t$,
+alors sa tordue $E'$ a pour cardinal $N' = p + 1 + t$.
+\bigskip
+\item Fixer une probabilité~$1/\sqrt{p}$ correspond aux nombres
+$727$-friables pour $p≈2^{256}$\ldots
+\item Fixer la borne de friablité est plus satisfaisant:
+par exemple, $N'$ est $p^{1/4}$-friable avec probabilité $1/256$
+pour $p≈2^{256}$.
+\bigskip
+\item Variante plus stricte de cette condition : $N'$ premier (= courbe
+tordue sûre), mais la courbe devient \og spéciale \fg : $\prob ≈ 1/\log p$.
+\end{itemize}
+\end{frame}
+
 \begin{frame}\frametitle{Discriminant du corps des endomorphismes}
 \begin{itemize}
 \item Le \emph{corps des endomorphismes} de~$E$ est
@@ -539,10 +567,6 @@ où $D_{K}$ ou $D_{K}/4$ est sans facteur carré et $D_K | D_{\mathcal{O}} | D_{
 En général, $\abs{D_K} ≈ p$ ;
 en particulier, $\abs{D_{K}} ≥ √p$ avec $\prob ≈ 1-O(1/√p)$.
 \end{block}
-\begin{itemize}
-\item Cette condition élimine les valeurs~$D_{K} = -3$ et~$-4$,
-correspondant aux $j$-invariants $0$ et~$1728$.
-\end{itemize}
 \end{frame}
 
 \begin{frame}\frametitle{Nombre de classes}
@@ -568,47 +592,11 @@ nécessaire.
 du groupe de classes de $K$ en facteurs élémentaires, on souhaite que
 $h_K$ ne soit pas friable (= n'ait pas que des petits facteurs premiers).
 \bigskip
-\item Un nombre aléatoire $n$ est $n^{1/u}$-friable avec
-probabilité~$\prob ≈ u^{-u}$.
-\item Par conséquent, $h_K$ a une probabilité négligeable d'être
-$(\log p)^{O(1)}$-friable.
-\begin{block}{}
-En général, $h_K$ a au moins un diviseur premier~$≥ (\log p)^{O(1)}$.
-\end{block}
-\item Calculer (et factoriser) $h_K$ est sous-exponentiel\bib{Biasse
-2010}, mais vérifier que $h_K$ n'est pas logarithmiquement friable
+\item Malheureusement,
+calculer (et factoriser) $h_K$ est sous-exponentiel\bib{Biasse
+2010}\ldots
+\item Mais vérifier que $h_K$ n'est pas logarithmiquement friable
 est polynomial.
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Degré de plongement}
-\begin{itemize}
-\item Le degré de plongement est l'ordre de $p$
-dans le groupe multiplicatif $\F_q^{×}$.
-\begin{block}{}
-Le degré de plongement est~$≥ p^{1/4}$
-avec probabilité~$\prob ≥ 1-1/√p$.
-\end{block}
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Friabilité de la courbe tordue}
-\begin{itemize}
-\item Si la courbe $E$ a pour cardinal $N = p + 1 - t$,
-alors sa tordue $E'$ a pour cardinal $N' = p + 1 + t$.
-\item Le cardinal $N'$ est $p^{1/u}$-friable
-avec probabilité $\prob ≈ u^{-u}$.
-\begin{block}{}
-En général, $N'$ a au moins un diviseur premier
-de taille polynomiale en~$\log p$.
-\end{block}
-\item Le choix du seuil $u$ est délicat ; par exemple, pour $p≈
-2^{256}$, une probabilité~$1/\sqrt{p}$ correspond aux nombres
-$727$-friables...
-\item fixer la borne de friablité est plus satisfaisant:
-par exemple, $N'$ est $p^{1/4}$-friable avec probabilité $1/256$.
-\item Variante plus stricte de cette condition : $N'$ premier (= courbe
-tordue sûre), mais la courbe devient \og spéciale \fg.
 \end{itemize}
 \end{frame}
 
@@ -623,48 +611,6 @@ $p-1$ a un diviseur premier $≥ (\log p)^2$
 avec probabilité $≥1-1/√p$.
 \end{block}
 \end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Corps de base spécial}
-\begin{itemize}
-\item Certaines courbes utilisent des corps de base
-dont la cardinalité est un nombre premier « spécial » :
-une valeur d'un « petit » polynôme.
-\begin{example}
-NIST $p_{192} = 2^{192} - 2^{64} - 1$ = $x^3 - x - 1$ où $x=2^{64}$.
-\end{example}
-\item Le logarithme discret \emph{multiplicatif} est plus facile
-dans de tels corps que dans le cas général.
-\item Il est envisageable que des attaques analogues soient découvertes
-sur les courbes elliptiques.
-\begin{block}{}
-Il est souhaitable de choisir un nombre premier pseudo-aléatoire.
-\end{block}
-\item Il est impossible de  vérifier si un nombre
-est une valeur d'un « petit » polynôme...
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle {Résumé (I)}
-\begin{center}\begin{tableau}{*{5}{l}}
-\entete       & NIST & Brainpool & ANSSI & OSCCA\\
-$N$ premier   &  ✓   & ✓         & ✓     & ✓   \\
-$p$ ordinaire &      & ✓         & ✓     & ✓   \\
-Loi unifiée   &  ✓   & ✓         & ✓     & ✓    \\
-Tordue sûre   &      &           &       &      \\
-Générique & &✓&✓&✓ \\
-\end{tableau}\end{center}
-\end{frame}
-
-\begin{frame}\frametitle {Résumé (II)}
-\begin{center}\begin{tableau}{*{4}{l}}
-\entete       & NUMS & Curve25519/41417 & Ed448-Goldilocks\\
-$N$ premier   & & &\\
-$p$ ordinaire & & &\\
-Loi unifiée   &✓ &✓ &✓\\
-Tordue sûre   &✓ &✓ &✓\\
-Générique  & & &\\
-\end{tableau}\end{center}
 \end{frame}
 
 \subsection{Facilitation de l'implémentation}
@@ -689,13 +635,29 @@ $a=-3$ avec probabilité
 \end{itemize}
 \end{frame}
 
+
+\begin{frame}\frametitle{Loi de groupe rapide}
+
+Certains modèles de courbes ont des formules d'addition particulièrement rapides :
+\begin{itemize}
+\item Courbes d'Edwards : $x^2 + y^2 = c^2 (t^2 + d z^2)$, $xy = zt$;
+\item Courbes de Jacobi : $y^2 = z^2 + 2 a x^2 + b t^2$, $x^2 = zt$...
+\end{itemize}
+\bigskip
+Ceci est possible sous certaines conditions sur la courbe :
+\begin{itemize}
+\item Edwards : point de $4$-torsion, $\prob = 17/48$;
+\item Jacobi : point de $2$-torsion, $\prob = 2/3$...
+\end{itemize}
+\end{frame}
+
 \begin{frame}\frametitle{Nombre de points}
 Si la courbe a $N < p$ points,
 alors un élément de $ℤ/Nℤ$ peut être représenté par un nombre
 de la même taille que $p$.
 
 \bigskip
-Exactement la moitié des courbes satisfont cette condition.
+Exactement la moitié des courbes satisfont cette condition, $\prob = 1/2$.
 \end{frame}
 
 \begin{frame}\frametitle{Racines carrées rapides}
@@ -717,6 +679,28 @@ c'est le cas de toutes les propositions académiques récentes.
 \end{frame}
 
 \subsection{Diversité}
+\begin{frame}\frametitle {Résumé (I)}
+\begin{center}\begin{tableau}{*{5}{l}}
+\entete       & NIST & Brainpool & ANSSI & OSCCA\\
+$N$ premier   &  ✓   & ✓         & ✓     & ✓   \\
+$p$ ordinaire &      & ✓         & ✓     & ✓   \\
+Loi unifiée   &  ✓   & ✓         & ✓     & ✓    \\
+Tordue sûre   &      &           &       &      \\
+Générique & &✓&✓&✓ \\
+\end{tableau}\end{center}
+\end{frame}
+
+\begin{frame}\frametitle {Résumé (II)}
+\begin{center}\begin{tableau}{*{4}{l}}
+\entete       & NUMS & Curve25519/41417 & Ed448-Goldilocks\\
+$N$ premier   & & &\\
+$p$ ordinaire & & &\\
+Loi unifiée   &✓ &✓ &✓\\
+Tordue sûre   &✓ &✓ &✓\\
+Générique  & & &\\
+\end{tableau}\end{center}
+\end{frame}
+
 \begin{frame}\frametitle{Différents critères pour différents usages}
 \begin{itemize}
 \item Les critères précédemment énoncés ne peuvent être tous vérifiés.
@@ -727,42 +711,6 @@ c'est le cas de toutes les propositions académiques récentes.
 Il est souhaitable d'utiliser (et de normaliser) différentes courbes
 pour différents usages !
 \end{block}
-\end{frame}
-
-\begin{frame}\frametitle{Zoo réel (I)}
-\begin{center}
-\begin{tabular}{cc}
-\includegraphics[width=.4\hsize]{weierstrass} & \includegraphics[width=.4\hsize]{edwards} \\
-Weierstrass & Edwards \\
-\end{tabular}
-\end{center}
-\end{frame}
-
-\begin{frame}\frametitle{Zoo réel (II)}
-\begin{center}
-\begin{tabular}{cc}
-\includegraphics[width=.4\hsize]{jacobi} & \includegraphics[width=.4\hsize]{hessian} \\
-Jacobi & Hess \\
-\end{tabular}
-\end{center}
-\end{frame}
-
-\begin{frame}\frametitle{Zoo fini (I)}
-\begin{center}
-\begin{tabular}{cc}
-\includegraphics[width=.45\hsize]{frog} & \includegraphics[width=.45\hsize]{cockroach} \\
-Grenouille & Cafard \\
-\end{tabular}
-\end{center}
-\end{frame}
-
-\begin{frame}\frametitle{Zoo fini (II)}
-\begin{center}
-\begin{tabular}{cc}
-\includegraphics[width=.45\hsize]{walrus} & \includegraphics[width=.45\hsize]{bunny} \\
-Morse & Lapin \\
-\end{tabular}
-\end{center}
 \end{frame}
 
 \section{Transparence}
@@ -777,19 +725,8 @@ ou une énumération des petites valeurs (efficacité).
 \item Possibilité de vérifier facilement qu'une courbe est issue
 d'un tel processus sans le rejouer intégralement.
 \end{itemize}
-\end{frame}
-
-\subsection{Le processus de génération}
-
-\begin{frame}\frametitle{Non-manipulabilité}
+\bigskip
 \begin{itemize}
-\item Ce processus permet de produire \emph{déterministement}
-une courbe elliptique cryptographique à partir
-\begin{itemize}
-\item d'une fonction d'échantillonnage des courbes
-(y compris graine éventuelle).
-\item et d'un ensemble de conditions de sécurité (y compris bornes numériques),
-\end{itemize}
 \item Parmi les conditions de sécurité, seules quelques-unes
 influenceront probablement le résultat final :
 \begin{itemize}
@@ -798,6 +735,8 @@ influenceront probablement le résultat final :
 \end{itemize}
 \end{itemize}
 \end{frame}
+
+\subsection{Le processus de génération}
 
 \begin{frame}\frametitle{Générateur pseudo-aléatoire}
 Un schéma classique de génération de courbe procède à la façon d'un générateur pseudo-aléatoire :
